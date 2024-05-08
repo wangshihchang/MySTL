@@ -1,7 +1,7 @@
 #ifndef _MYSTL_UTIL_H_
 #define _MYSTL_UTIL_H_
 
-// 这个文件包含一些通用工具，包括 move, forward, swap 等函数，以及 pair 等 
+// 这个文件包含一些通用工具，包括 move, forward, swap 等函数，以及 pair 等
 
 #include <cstddef>
 #include <type_traits>
