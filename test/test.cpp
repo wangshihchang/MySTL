@@ -4,6 +4,8 @@
 #include "algo.h"
 #include "algobase.h"
 #include "allocator.h"
+#include "astring.h"
+#include "basic_string.h"
 #include "functional.h"
 #include "heap_algo.h"
 #include "iterator.h"

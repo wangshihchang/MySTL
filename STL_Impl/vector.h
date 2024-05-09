@@ -63,7 +63,7 @@ class vector {
     iterator cap_;    // 表示目前储存空间的尾部
 
    public:
-    // 构造、复制、析构函数
+    // 构造、复制、移动、析构函数
     vector() noexcept { try_init(); }
 
     explicit vector(size_type n) { fill_init(n, value_type()); }
