@@ -32,8 +32,8 @@ class allocator {
     template <class... Args>
     static void construct(T* ptr, Args&&... args);
 
-    static void destory(T* ptr);
-    static void destory(T* first, T* last);
+    static void destroy(T* ptr);
+    static void destroy(T* first, T* last);
 };
 
 template <class T>
@@ -81,12 +81,12 @@ void allocator<T>::construct(T* ptr, Args&&... args) {
 }
 
 template <class T>
-void allocator<T>::destory(T* ptr) {
+void allocator<T>::destroy(T* ptr) {
     MySTL::destroy(ptr);
 }
 
 template <class T>
-void allocator<T>::destory(T* first, T* last) {
+void allocator<T>::destroy(T* first, T* last) {
     MySTL::destroy(first, last);
 }
 }  // namespace MySTL

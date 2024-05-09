@@ -567,7 +567,7 @@ void vector<T>::copy_assign(Iter first, Iter last, forward_iterator_tag) {
         swap(tmp);
     } else if (size() >= len) {
         auto new_end = MySTL::copy(first, last, begin_);
-        data_allocator::destory(new_end, end_);
+        data_allocator::destroy(new_end, end_);
         end_ = new_end;
     } else {
         auto mid = first;
