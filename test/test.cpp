@@ -10,6 +10,7 @@
 #include "functional.h"
 #include "heap_algo.h"
 #include "iterator.h"
+#include "list.h"
 #include "memory.h"
 #include "queue.h"
 #include "stack.h"
