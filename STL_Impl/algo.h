@@ -19,6 +19,178 @@
 namespace MySTL {
 
 /*****************************************************************************************/
+// set_union:S1和S2内的每个元素不需要唯一，如果某个值在S1出现n次，在S2出现m次，那么该值在输出区间中出现max(m,n)次
+// 计算 S1∪S2 的并集结果并保存到 result 中，返回一个迭代器指向输出结果的尾部
+/*****************************************************************************************/
+template <class InputIter1, class InputIter2, class OutputIter>
+OutputIter set_union(InputIter1 first1, InputIter1 last1,
+                     InputIter2 first2, InputIter2 last2, OutputIter result) {
+    while (first1 != last1 && first2 != last2) {
+        if (*first1 < *first2) {
+            *result = *first1;
+            ++first1;
+        } else if (*first2 < *first1) {
+            *result = *first2;
+            ++first2;
+        } else {
+            *result = *first1;
+            ++first1;
+            ++first2;
+        }
+        ++result;
+    }
+    // 将剩余元素拷贝到 result
+    return MySTL::copy(first2, last2, MySTL::copy(first1, last1, result));
+}
+
+// 重载版本使用函数对象 comp 代替比较操作
+template <class InputIter1, class InputIter2, class OutputIter, class Compare>
+OutputIter set_union(InputIter1 first1, InputIter1 last1,
+                     InputIter2 first2, InputIter2 last2,
+                     OutputIter result, Compare comp) {
+    while (first1 != last1 && first2 != last2) {
+        if (comp(*first1, *first2)) {
+            *result = *first1;
+            ++first1;
+        } else if (comp(*first2, *first1)) {
+            *result = *first2;
+            ++first2;
+        } else {
+            *result = *first1;
+            ++first1;
+            ++first2;
+        }
+        ++result;
+    }
+    // 将剩余元素拷贝到 result
+    return MySTL::copy(first2, last2, MySTL::copy(first1, last1, result));
+}
+/*****************************************************************************************/
+// set_intersection:求两个集合的交集，如果某个值在S1出现n次，在S2出现m次，则在输出区间会出现min(m,n)次
+// 计算 S1∩S2 的交集结果并保存到 result 中，返回一个迭代器指向输出结果的尾部
+/*****************************************************************************************/
+template <class InputIter1, class InputIter2, class OutputIter>
+OutputIter set_intersection(InputIter1 first1, InputIter1 last1,
+                            InputIter2 first2, InputIter2 last2, OutputIter result) {
+    while (first1 != last1 && first2 != last2) {
+        if (*first1 < *first2) {
+            ++first1;
+        } else if (*first2 < *first1) {
+            ++first2;
+        } else {
+            *result = *first1;
+            ++first1;
+            ++first2;
+            ++result;
+        }
+    }
+    return result;
+}
+// 重载版本使用函数对象 comp 代替比较操作
+template <class InputIter1, class InputIter2, class OutputIter, class Compare>
+OutputIter set_intersection(InputIter1 first1, InputIter1 last1,
+                            InputIter2 first2, InputIter2 last2,
+                            OutputIter result, Compare comp) {
+    while (first1 != last1 && first2 != last2) {
+        if (comp(*first1, *first2)) {
+            ++first1;
+        } else if (comp(*first2, *first1)) {
+            ++first2;
+        } else {
+            *result = *first1;
+            ++first1;
+            ++first2;
+            ++result;
+        }
+    }
+    return result;
+}
+/*****************************************************************************************/
+// set_difference:求两个集合的差集，此集合包含出现在S1但不在S2中的元素。如果某个值在S1出现n次，在S2中出现m次，则在输出区间会出现max(n-m,0)次
+// 计算 S1-S2 的差集结果并保存到 result 中，返回一个迭代器指向输出结果的尾部
+/*****************************************************************************************/
+template <class InputIter1, class InputIter2, class OutputIter>
+OutputIter set_difference(InputIter1 first1, InputIter1 last1,
+                          InputIter2 first2, InputIter2 last2, OutputIter result) {
+    while (first1 != last1 && first2 != last2) {
+        if (*first1 < *first2) {
+            *result = *first1;
+            ++first1;
+            ++result;
+        } else if (*first2 < *first1) {
+            ++first2;
+        } else {
+            ++first1;
+            ++first2;
+        }
+    }
+    return MySTL::copy(first1, last1, result);
+}
+// 重载版本使用函数对象 comp 代替比较操作
+template <class InputIter1, class InputIter2, class OutputIter, class Compare>
+OutputIter set_difference(InputIter1 first1, InputIter1 last1,
+                          InputIter2 first2, InputIter2 last2,
+                          OutputIter result, Compare comp) {
+    while (first1 != last1 && first2 != last2) {
+        if (comp(*first1, *first2)) {
+            *result = *first1;
+            ++first1;
+            ++result;
+        } else if (comp(*first2, *first1)) {
+            ++first2;
+        } else {
+            ++first1;
+            ++first2;
+        }
+    }
+    return MySTL::copy(first1, last1, result);
+}
+/*****************************************************************************************/
+// set_symmetric_difference:求两个集合的对称差集，此集合包含在S1但不在S2内的元素和在S2但不在S1的元素。如果某个值出现在S1出现n次，在S2出现m次，则在输出区间会出现|n-m|次
+// 计算 (S1-S2)∪(S2-S1) 的对称差集结果并保存到 result 中，返回一个迭代器指向输出结果的尾部
+/*****************************************************************************************/
+template <class InputIter1, class InputIter2, class OutputIter>
+OutputIter set_symmetric_difference(InputIter1 first1, InputIter1 last1,
+                                    InputIter2 first2, InputIter2 last2, OutputIter result) {
+    while (first1 != last1 && first2 != last2) {
+        if (*first1 < *first2) {
+            *result = *first1;
+            ++first1;
+            ++result;
+        } else if (*first2 < *first1) {
+            *result = *first2;
+            ++first2;
+            ++result;
+        } else {
+            ++first1;
+            ++first2;
+        }
+    }
+    return MySTL::copy(first2, last2, MySTL::copy(first1, last1, result));
+}
+// 重载版本使用函数对象 comp 代替比较操作
+template <class InputIter1, class InputIter2, class OutputIter, class Compare>
+OutputIter set_symmetric_difference(InputIter1 first1, InputIter1 last1,
+                                    InputIter2 first2, InputIter2 last2,
+                                    OutputIter result, Compare comp) {
+    while (first1 != last1 && first2 != last2) {
+        if (comp(*first1, *first2)) {
+            *result = *first1;
+            ++first1;
+            ++result;
+        } else if (comp(*first2, *first1)) {
+            *result = *first2;
+            ++first2;
+            ++result;
+        } else {
+            ++first1;
+            ++first2;
+        }
+    }
+    return MySTL::copy(first2, last2, MySTL::copy(first1, last1, result));
+}
+
+/*****************************************************************************************/
 // accumulate
 // 版本1：以初值 init 对每个元素进行累加
 // 版本2：以初值 init 对每个元素进行二元操作

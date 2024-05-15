@@ -8,6 +8,7 @@
 #include "basic_string.h"
 #include "deque.h"
 #include "functional.h"
+#include "hashtable.h"
 #include "heap_algo.h"
 #include "iterator.h"
 #include "list.h"
@@ -18,6 +19,8 @@
 #include "set.h"
 #include "stack.h"
 #include "uninitialized.h"
+#include "unordered_map.h"
+#include "unordered_set.h"
 #include "util.h"
 #include "vector.h"
 int main() {
