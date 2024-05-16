@@ -197,7 +197,7 @@ OutputIter set_symmetric_difference(InputIter1 first1, InputIter1 last1,
 /*****************************************************************************************/
 // 版本1
 template <class Iter, class T>
-T accumulat(Iter first, Iter last, T init) {
+T accumulate(Iter first, Iter last, T init) {
     for (; first != last; ++first) {
         init += *first;
     }
@@ -206,7 +206,7 @@ T accumulat(Iter first, Iter last, T init) {
 
 // 版本2
 template <class Iter, class T, class BinaryOperation>
-T accumulat(Iter first, Iter last, T init, BinaryOperation binary_op) {
+T accumulate(Iter first, Iter last, T init, BinaryOperation binary_op) {
     for (; first != last; ++first) {
         init = binary_op(init, *first);
     }
@@ -257,7 +257,7 @@ OutputIter adjacent_difference(InputIter first, InputIter last, OutputIter resul
 // 版本1
 template <class InputIter1, class InputIter2, class T>
 T inner_product(InputIter1 first1, InputIter1 last1,
-                InputIter2 first2, InputIter2 last2, T init) {
+                InputIter2 first2, T init) {
     for (; first1 != last1; ++first1, ++first2) {
         init = init + (*first1 * (*first2));
     }
@@ -267,8 +267,8 @@ T inner_product(InputIter1 first1, InputIter1 last1,
 // 版本2
 template <class InputIter1, class InputIter2, class T, class BinaryOp1, class BinaryOp2>
 T inner_product(InputIter1 first1, InputIter1 last1,
-                InputIter2 first2, InputIter2 last2,
-                T init, BinaryOp1 binary_op1, BinaryOp2 binary_op2) {
+                InputIter2 first2, T init,
+                BinaryOp1 binary_op1, BinaryOp2 binary_op2) {
     for (; first1 != last1; ++first1, ++first2) {
         init = binary_op1(init, binary_op2(*first1, *first2));
     }
@@ -440,7 +440,7 @@ ForwardIter1 search(ForwardIter1 first1, ForwardIter1 last1, ForwardIter2 first2
             }
         }
     }
-    return last1;
+    return first1;
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
@@ -467,7 +467,7 @@ ForwardIter1 search(ForwardIter1 first1, ForwardIter1 last1, ForwardIter2 first2
             }
         }
     }
-    return last1;
+    return first1;
 }
 
 /*****************************************************************************************/
@@ -549,7 +549,7 @@ ForwardIter1 find_end_dispatch(ForwardIter1 first1, ForwardIter1 last1,
             // 利用 search 查找某个子序列的首次出现点，找不到则返回 last1
             auto new_result = MySTL::search(first1, last1, first2, last2);
             if (new_result == last1)
-                return last1;
+                return result;
             else {
                 result = new_result;
                 first1 = new_result;
@@ -584,6 +584,60 @@ ForwardIter1 find_end(ForwardIter1 first1, ForwardIter1 last1,
     typedef typename iterator_traits<ForwardIter1>::iterator_category Category1;
     typedef typename iterator_traits<ForwardIter2>::iterator_category Category2;
     return MySTL::find_end_dispatch(first1, last1, first2, last2, Category1(), Category2());
+}
+
+// 重载版本使用函数对象 comp 代替比较操作
+// find_end_dispatch 的 forward_iterator_tag 版本
+template <class ForwardIter1, class ForwardIter2, class Compared>
+ForwardIter1
+find_end_dispatch(ForwardIter1 first1, ForwardIter1 last1,
+                  ForwardIter2 first2, ForwardIter2 last2,
+                  forward_iterator_tag, forward_iterator_tag, Compared comp) {
+    if (first2 == last2) {
+        return last1;
+    } else {
+        auto result = last1;
+        while (true) {
+            // 利用 search 查找某个子序列的首次出现点，找不到则返回 last1
+            auto new_result = MySTL::search(first1, last1, first2, last2, comp);
+            if (new_result == last1) {
+                return result;
+            } else {
+                result = new_result;
+                first1 = new_result;
+                ++first1;
+            }
+        }
+    }
+}
+
+// find_end_dispatch 的 bidirectional_iterator_tag 版本
+template <class BidirectionalIter1, class BidirectionalIter2, class Compared>
+BidirectionalIter1
+find_end_dispatch(BidirectionalIter1 first1, BidirectionalIter1 last1,
+                  BidirectionalIter2 first2, BidirectionalIter2 last2,
+                  bidirectional_iterator_tag, bidirectional_iterator_tag, Compared comp) {
+    typedef reverse_iterator<BidirectionalIter1> reviter1;
+    typedef reverse_iterator<BidirectionalIter2> reviter2;
+    reviter1 rlast1(first1);
+    reviter2 rlast2(first2);
+    reviter1 rresult = MySTL::search(reviter1(last1), rlast1, reviter2(last2), rlast2, comp);
+    if (rresult == rlast1) {
+        return last1;
+    } else {
+        auto result = rresult.base();
+        MySTL::advance(result, -MySTL::distance(first2, last2));
+        return result;
+    }
+}
+
+template <class ForwardIter1, class ForwardIter2, class Compared>
+ForwardIter1
+find_end(ForwardIter1 first1, ForwardIter1 last1,
+         ForwardIter2 first2, ForwardIter2 last2, Compared comp) {
+    typedef typename iterator_traits<ForwardIter1>::iterator_category Category1;
+    typedef typename iterator_traits<ForwardIter2>::iterator_category Category2;
+    return MySTL::find_end_dispatch(first1, last1, first2, last2, Category1(), Category2(), comp);
 }
 
 /*****************************************************************************************/
@@ -952,9 +1006,9 @@ MySTL::pair<ForwardIter, ForwardIter> erange_dispatch(ForwardIter first, Forward
         } else if (comp(value, *middle)) {
             len = half;
         } else {
-            left = MySTL::lower_bound(first, last, value);
+            left = MySTL::lower_bound(first, last, value, comp);
             MySTL::advance(first, len);
-            right = MySTL::upper_bound(++middle, first, value);
+            right = MySTL::upper_bound(++middle, first, value, comp);
             return MySTL::pair<ForwardIter, ForwardIter>(left, right);
         }
     }
@@ -978,8 +1032,8 @@ MySTL::pair<RandomIter, RandomIter> erange_dispatch(RandomIter first, RandomIter
         } else if (comp(value, *middle)) {
             len = half;
         } else {
-            left = MySTL::lower_bound(first, middle, value);
-            right = MySTL::upper_bound(++middle, first + len, value);
+            left = MySTL::lower_bound(first, middle, value, comp);
+            right = MySTL::upper_bound(++middle, first + len, value, comp);
             return MySTL::pair<RandomIter, RandomIter>(left, right);
         }
     }
@@ -1225,8 +1279,7 @@ OutputIter transform(InputIter first, InputIter last, OutputIter result, UnaryOp
 
 template <class InputIter1, class InputIter2, class OuputIter, class BinaryOperation>
 OuputIter transform(InputIter1 first1, InputIter1 last1,
-                    InputIter2 first2, InputIter2 last2,
-                    OuputIter result, BinaryOperation binary_op) {
+                    InputIter2 first2, OuputIter result, BinaryOperation binary_op) {
     for (; first1 != last1; ++first1, ++first2, ++result) {
         *result = binary_op(*first1, *first2);
     }
@@ -1278,7 +1331,7 @@ OuputIter remove_copy_if(InputIter first, InputIter last, OuputIter result, Unar
 // 移除区间内所有令一元操作 unary_pred 为 true 的元素
 /*****************************************************************************************/
 template <class ForwardIter, class UnaryPredicate>
-ForwardIter remove(ForwardIter first, ForwardIter last, UnaryPredicate unary_pred) {
+ForwardIter remove_if(ForwardIter first, ForwardIter last, UnaryPredicate unary_pred) {
     first = MySTL::find_if(first, last, unary_pred);
     auto next = first;
     return first == last ? first : MySTL::remove_copy_if(++next, last, first, unary_pred);
@@ -1303,7 +1356,7 @@ void replace(ForwardIter first, ForwardIter last, const T& old_value, const T& n
 template <class InputIter, class OutputIter, class T>
 OutputIter replace_copy(InputIter first, InputIter last, OutputIter result,
                         const T& old_value, const T& new_value) {
-    for (; first != last; ++first) {
+    for (; first != last; ++first, ++result) {
         *result = *first == old_value ? new_value : *first;
     }
     return result;
@@ -1313,8 +1366,8 @@ OutputIter replace_copy(InputIter first, InputIter last, OutputIter result,
 // replace_if
 // 将区间内所有令一元操作 unary_pred 为 true 的元素都用 new_value 替代
 /*****************************************************************************************/
-template <class ForwardIter, class T, class UnaryPredicate>
-void replace_if(ForwardIter first, ForwardIter last, const T& new_value, UnaryPredicate unary_pred) {
+template <class ForwardIter, class UnaryPredicate, class T>
+void replace_if(ForwardIter first, ForwardIter last, UnaryPredicate unary_pred, const T& new_value) {
     for (; first != last; ++first) {
         if (unary_pred(*first))
             *first = new_value;
@@ -1325,10 +1378,10 @@ void replace_if(ForwardIter first, ForwardIter last, const T& new_value, UnaryPr
 // replace_copy_if
 // 行为与 replace_if 类似，不同的是将结果复制到 result 所指的容器中，原序列没有改变
 /*****************************************************************************************/
-template <class InputIter, class OutputIter, class T, class UnaryPredicate>
-OutputIter replace_copy(InputIter first, InputIter last, OutputIter result,
-                        const T& new_value, UnaryPredicate unary_pred) {
-    for (; first != last; ++first) {
+template <class InputIter, class OutputIter, class UnaryPredicate, class T>
+OutputIter replace_copy_if(InputIter first, InputIter last, OutputIter result,
+                           UnaryPredicate unary_pred, const T& new_value) {
+    for (; first != last; ++first, ++result) {
         *result = unary_pred(*first) ? new_value : *first;
     }
     return result;
@@ -1714,7 +1767,7 @@ OuputIter merge(InputIter1 first1, InputIter1 last1,
                 InputIter2 first2, InputIter2 last2,
                 OuputIter result, Comapre comp) {
     while (first1 != last1 && first2 != last2) {
-        if (comp(*first1, *first2)) {
+        if (comp(*first2, *first1)) {
             *result = *first2;
             ++first2;
         } else {
@@ -2081,7 +2134,7 @@ BidirectionalIter partition(BidirectionalIter first, BidirectionalIter last, Una
         }
         if (first == last) break;
         --last;
-        while (first != last && !unary_pred(*first)) {
+        while (first != last && !unary_pred(*last)) {
             --last;
         }
         if (first == last) break;

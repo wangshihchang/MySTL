@@ -158,8 +158,8 @@ class map {
 
     pair<iterator, bool> insert(const value_type& value) { return tree_.insert_unique(value); }
     pair<iterator, bool> insert(value_type&& value) { return tree_.insert_unique(MySTL::move(value)); }
-    iterator insert(iterator hint, const value_type& value) { return tree_.insert_unique_use_hint(hint, value); }
-    iterator insert(iterator hint, value_type&& value) { return tree_.insert_unique_use_hint(hint, MySTL::move(value)); }
+    iterator insert(iterator hint, const value_type& value) { return tree_.insert_unique(hint, value); }
+    iterator insert(iterator hint, value_type&& value) { return tree_.insert_unique(hint, MySTL::move(value)); }
     template <class InputIter>
     void insert(InputIter first, InputIter last) { tree_.insert_unique(first, last); }
 
@@ -172,7 +172,7 @@ class map {
     iterator find(const key_type& key) { return tree_.find(key); }
     const_iterator find(const key_type& key) const { return tree_.find(key); }
 
-    size_type count(const key_type& key) const { return tree_.count_unique(key); }
+    size_type count(const key_type& key) const { return tree_.count_multi(key); }
 
     iterator lower_bound(const key_type& key) { return tree_.lower_bound(key); }
     const_iterator lower_bound(const key_type& key) const { return tree_.lower_bound(key); }
@@ -367,7 +367,7 @@ class multimap {
     }
 
     void erase(iterator position) { tree_.erase(position); }
-    size_type erase(const key_type& key) { return tree_.erase_multi(key); }
+    size_type erase(const key_type& key) { return tree_.erase_unique(key); }
     void erase(iterator first, iterator last) { tree_.erase(first, last); }
 
     void clear() { tree_.clear(); }

@@ -82,7 +82,7 @@ OuputIter unchecked_copy_cat(RandomIter first, RandomIter last, OuputIter result
 
 template <class InputIter, class OuputIter>
 OuputIter unchecked_copy(InputIter first, InputIter last, OuputIter result) {
-    return unchecked_copy_cat(first, last, iterator_category(first));
+    return unchecked_copy_cat(first, last, result, iterator_category(first));
 }
 
 // 为 trivially_copy_assignable 类型提供特化版本

@@ -556,7 +556,7 @@ class basic_string {
         return is;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, basic_string& str) {
+    friend std::ostream& operator<<(std::ostream& os, const basic_string& str) {
         for (size_type i = 0; i < str.size_; ++i)
             os << *(str.buffer_ + i);
         return os;
@@ -623,7 +623,7 @@ basic_string<CharType, CharTraits>::operator=(basic_string&& rhs) noexcept {
     destroy_buffer();
     buffer_ = rhs.buffer_;
     size_ = rhs.size_;
-    cap_ = buffer_.cap_;
+    cap_ = rhs.cap_;
     rhs.buffer_ = nullptr;
     rhs.size_ = 0;
     rhs.cap_ = 0;
@@ -863,7 +863,7 @@ int basic_string<CharType, CharTraits>::compare(size_type pos1, size_type count1
 template <class CharType, class CharTraits>
 void basic_string<CharType, CharTraits>::reverse() noexcept {
     for (auto i = begin(), j = end(); i < j;)
-        MySTL::swap(i++, --j);
+        MySTL::iter_swap(i++, --j);
 }
 
 // 交换两个 basic_string

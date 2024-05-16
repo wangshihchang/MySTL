@@ -100,7 +100,7 @@ class vector {
     }
 
     ~vector() {
-        destroy_and_recover(begin_.end_, cap_ - begin_);
+        destroy_and_recover(begin_, end_, cap_ - begin_);
         begin_ = end_ = cap_ = nullptr;
     }
 

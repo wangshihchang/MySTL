@@ -138,7 +138,7 @@ value_type(const Iterator&) {
 template <class InputIterator>
 typename iterator_traits<InputIterator>::difference_type
 distance_dispatch(InputIterator first, InputIterator last, input_iterator_tag) {
-    typename iterator_traits<InputIterator>::distance_type n = 0;
+    typename iterator_traits<InputIterator>::difference_type n = 0;
     while (first != last) {
         ++first;
         ++n;
@@ -156,7 +156,7 @@ distance_dispatch(RandomIterator first, RandomIterator last, random_access_itera
 template <class InputIterator>
 typename iterator_traits<InputIterator>::difference_type
 distance(InputIterator first, InputIterator last) {
-    return distance_dispatch(first, last, iterator_categor(first));
+    return distance_dispatch(first, last, iterator_category(first));
 }
 
 // 以下函数用于让迭代器前进 n 个距离

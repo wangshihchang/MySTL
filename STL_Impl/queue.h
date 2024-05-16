@@ -33,6 +33,8 @@ class queue {
     queue() = default;
     explicit queue(size_type n) : container_(n) {}
     queue(size_type n, const value_type& value) : container_(n, value) {}
+    template <class IIter>
+    queue(IIter first, IIter last) : container_(first, last) {}
     queue(std::initializer_list<T> ilist) : container_(ilist.begin(), ilist.end()) {}
     queue(const Container& c) : container_(c) {}
     queue(Container&& c) noexcept(std::is_nothrow_move_constructible<Container>::value)
@@ -252,7 +254,7 @@ bool operator!=(priority_queue<T, Container, Compare>& lhs,
     return lhs != rhs;
 }
 
-// 重载 mystl 的 swap
+// 重载 MySTL 的 swap
 template <class T, class Container, class Compare>
 void swap(priority_queue<T, Container, Compare>& lhs,
           priority_queue<T, Container, Compare>& rhs) noexcept(noexcept(lhs.swap(rhs))) {

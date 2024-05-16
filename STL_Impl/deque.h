@@ -170,7 +170,7 @@ struct deque_iterator : public iterator<random_access_iterator_tag, T> {
         return tmp -= n;
     }
 
-    reference operator[](difference_type n) const { return *(this + n); }
+    reference operator[](difference_type n) const { return *(*this + n); }
 
     // 重载比较操作符
     bool operator==(const self& rhs) const { return cur == rhs.cur; }
@@ -292,12 +292,12 @@ class deque {
 
     reference at(size_type n) {
         THROW_OUT_OF_RANGE_IF(!(n < size()), "deque<T>::at() subscript out of range");
-        return *(this)[n];
+        return (*this)[n];
     }
 
     const_reference at(size_type n) const {
         THROW_OUT_OF_RANGE_IF(!(n < size()), "deque<T>::at() subscript out of range");
-        return *(this)[n];
+        return (*this)[n];
     }
 
     reference front() {

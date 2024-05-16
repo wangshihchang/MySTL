@@ -61,7 +61,7 @@ class unordered_set {
                   const size_type bucket_count = 100,
                   const Hash& hash = Hash(),
                   const KeyEqual equal = KeyEqual())
-        : ht_(MySTL::max(bucket_count, static_cast<size_type>(MySTL::distance(first, last)), hash, equal)) {
+        : ht_(MySTL::max(bucket_count, static_cast<size_type>(MySTL::distance(first, last))), hash, equal) {
         for (; first != last; ++first)
             ht_.insert_unique_noresize(*first);
     }

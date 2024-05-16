@@ -75,7 +75,7 @@ ForwardIter uninitialized_copy_n(InputIter first, Size n, ForwardIter result) {
 /*****************************************************************************************/
 template <class ForwardIter, class T>
 void unchecked_uninit_fill(ForwardIter first, ForwardIter last, const T& value, std::true_type) {
-    MySTL::fill(fill, last, value);
+    MySTL::fill(first, last, value);
 }
 
 template <class ForwardIter, class T>

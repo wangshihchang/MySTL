@@ -119,7 +119,7 @@ class unordered_map {
     pair<iterator, bool> emplace(Args&&... args) { return ht_.emplace_unique(MySTL::forward<Args>(args)...); }
 
     template <class... Args>
-    iterator emplace_hint(const_iterator hint, Args&&... args) { return ht_.emplace_unique_use_hint(MySTL::forward<Args>(args)...); }
+    iterator emplace_hint(const_iterator hint, Args&&... args) { return ht_.emplace_unique_use_hint(hint, MySTL::forward<Args>(args)...); }
 
     // insert
     pair<iterator, bool> insert(const value_type& value) { return ht_.insert_unique(value); }
