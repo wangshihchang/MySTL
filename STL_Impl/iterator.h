@@ -7,11 +7,11 @@
 
 namespace MySTL {
 // 五种迭代器类型
-struct input_iterator_tag {};
-struct output_iterator_tag {};
-struct forward_iterator_tag : public input_iterator_tag {};
-struct bidirectional_iterator_tag : public forward_iterator_tag {};
-struct random_access_iterator_tag : public bidirectional_iterator_tag {};
+struct input_iterator_tag {};                                              // 输入迭代器，只读不写，单遍扫描，只能递增(++)
+struct output_iterator_tag {};                                             // 输出迭代器，只写不读，单遍扫描，只能递增(++)
+struct forward_iterator_tag : public input_iterator_tag {};                // 前向迭代器，可读可写，多遍扫描，只能递增(++)
+struct bidirectional_iterator_tag : public forward_iterator_tag {};        // 双向迭代器，可读可写，多遍扫描，可递增或递减(++/--)
+struct random_access_iterator_tag : public bidirectional_iterator_tag {};  // 随机访问迭代器，可读可写，多遍扫描，支持迭代器全部运算
 
 // 迭代器模板
 template <class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>

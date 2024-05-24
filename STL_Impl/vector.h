@@ -372,7 +372,7 @@ void vector<T>::emplace_back(Args&&... args) {
 template <class T>
 void vector<T>::push_back(const value_type& value) {
     if (end_ != cap_) {
-        data_allocator::construct(MySTL::address_of(*end), value);
+        data_allocator::construct(MySTL::address_of(*end_), value);
         ++end_;
     } else {
         reallocate_insert(end_, value);
